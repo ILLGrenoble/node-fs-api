@@ -13,7 +13,7 @@ filesRouter.post('*', FilesController.createContent);
 filesRouter.put('*', FilesController.performContentAction);
 
 // Move file or directory
-filesRouter.patch('*', FilesController.getContent);
+filesRouter.patch('*', FilesController.moveContent);
 
 // Delete file or directory
 filesRouter.delete('*', FilesController.deleteContent);

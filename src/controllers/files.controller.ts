@@ -1,7 +1,7 @@
 import { Request, Response } from "express"
 import { FilesService } from "../services";
 import { errMsg } from "../utils";
-import { ContentAction, ContentCreation } from "../models";
+import { ContentAction, ContentCreation, ContentMove } from "../models";
 
 const getContent = async (req: Request, res: Response) => {
     const path = req.path;
@@ -34,6 +34,32 @@ const createContent = async (req: Request, res: Response) => {
             const result = await FilesService.createContent(uriDecodedPath, contentCreation);
             if (result.stats) {
                 res.status(201).json(result.stats);
+    
+            } else {
+                res.status(409).send(result.error);
+            }
+    
+        } else {
+            res.status(404).send(`Path does not exist`);
+        }
+ 
+    } catch (error) {
+        res.status(500).send(`Internal server error: ${errMsg(error)}`);
+    }
+}
+
+const moveContent = async (req: Request, res: Response) => {
+    const path = req.path;
+
+    try {
+        const uriDecodedPath = decodeURI(path);
+        
+        if (FilesService.exists(uriDecodedPath)) {
+            const contentMove = req.body as ContentMove;
+
+            const result = await FilesService.moveContent(uriDecodedPath, contentMove.path);
+            if (result.stats) {
+                res.status(200).json(result.stats);
     
             } else {
                 res.status(409).send(result.error);
@@ -83,7 +109,7 @@ const performContentAction = async (req: Request, res: Response) => {
 
             const result = await FilesService.performContentAction(uriDecodedPath, contentAction);
             if (result.stats) {
-                res.status(201).json(result.stats);
+                res.status(200).json(result.stats);
     
             } else {
                 res.status(409).send(result.error);
@@ -103,5 +129,6 @@ export const FilesController = {
     getContent,
     createContent,
     deleteContent,
+    moveContent,
     performContentAction,
 }

@@ -1,7 +1,7 @@
-import { ActionResult, ContentAction, ContentCreation, CreationResult, DirectoryContent, FileContent, FileStats } from "../models"
-import { stat, readFile, access, constants, readdir, mkdir, rm, writeFile, appendFile, copyFile } from 'fs/promises';
+import { ActionResult, ContentAction, ContentCreation, CreationResult, DirectoryContent, FileContent, FileStats, MoveResult } from "../models"
+import { stat, readFile, access, constants, readdir, mkdir, rm, writeFile, appendFile, copyFile, rename } from 'fs/promises';
 import { existsSync } from 'fs';
-import { basename, extname } from 'path';
+import { basename, extname, dirname } from 'path';
 import { isBinaryFile} from 'isbinaryfile';
 import mime from 'mime-types';
 import { errMsg, logger } from "../utils";
@@ -183,6 +183,36 @@ const deleteContent = async (path: string): Promise<DeletionResult> => {
     }
 }
 
+const moveContent = async (sourcePath: string, destinationPath: string): Promise<MoveResult> => {
+    if (!destinationPath.startsWith('/')) {
+        destinationPath = `/${destinationPath}`;
+    }
+
+    const fullSourcePath = `${process.env.HOME}${sourcePath}`;
+    const fullDestinationPath = `${process.env.HOME}${destinationPath}`;
+    const destinationStats = await getStats(destinationPath);
+
+    if (destinationStats) {
+        return { error: 'Destination path already exists' };
+    }
+
+    const destinationFolder = dirname(destinationPath);
+    if (!exists(destinationFolder)) {
+        return { error: 'Destination folder does not exist' };
+    }
+
+    try {
+        await rename(fullSourcePath, fullDestinationPath)
+
+        const moveStats = await getStats(destinationPath);
+        return { stats: moveStats }
+
+    } catch (error) {
+        logger.error(`Failed to move content: ${errMsg(error)}`);
+        throw error;
+    }
+}
+
 const performContentAction = async (path: string, action: ContentAction): Promise<ActionResult> => {
     try {
         if (exists(path)) {
@@ -315,5 +345,6 @@ export const FilesService = {
     getContent,
     createContent,
     deleteContent,
+    moveContent,
     performContentAction,
 }
