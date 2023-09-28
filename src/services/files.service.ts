@@ -1,5 +1,5 @@
-import { ContentCreation, CreationResult, DirectoryContent, FileContent, FileStats } from "../models"
-import { stat, readFile, access, constants, readdir, mkdir, rm, writeFile } from 'fs/promises';
+import { ActionResult, ContentAction, ContentCreation, CreationResult, DirectoryContent, FileContent, FileStats } from "../models"
+import { stat, readFile, access, constants, readdir, mkdir, rm, writeFile, appendFile, copyFile } from 'fs/promises';
 import { existsSync } from 'fs';
 import { basename, extname } from 'path';
 import { isBinaryFile} from 'isbinaryfile';
@@ -133,12 +133,19 @@ const createContent = async (path: string, data: ContentCreation): Promise<Creat
 
             } else if (data.type === 'file') {
                 const buffer = Buffer.from(data.content, data.format);
-                await writeFile(contentFullPath, buffer);
+                if (data.chunk == null || data.chunk === 1) {
+                    await writeFile(contentFullPath, buffer);
+                
+                } else if (stats) {
+                    await appendFile(contentFullPath, buffer);
+                
+                } else {
+                    return { error: 'Received chunk for file that does not exist' };
+                }
             }
 
-            const stats = await getStats(contentPath);
-    
-            return { stats };
+            const createdStats = await getStats(contentPath);
+            return { stats: createdStats };
     
         } else {
             return { error: 'Parent directory is not writeable' };
@@ -176,9 +183,137 @@ const deleteContent = async (path: string): Promise<DeletionResult> => {
     }
 }
 
+const performContentAction = async (path: string, action: ContentAction): Promise<ActionResult> => {
+    try {
+        if (exists(path)) {
+            if (action.action === 'COPY_TO') {
+                return performCopyToAction(path, action.path);
+
+            } else if (action.action === 'NEW_FOLDER') {
+                return performNewFolderAction(path);
+
+            } else if (action.action === 'NEW_FILE') {
+                return performNewFileAction(path);
+            }
+
+            return {error: `Unknown content action ${action.action}`};
+
+        } else {
+            return {error: 'path does not exists' };
+        }
+
+    } catch (error) {
+        logger.error(`Failed to delete content: ${errMsg(error)}`);
+        throw error;
+    }
+}
+
+const performCopyToAction = async (sourcePath: string, destinationPath: string): Promise<ActionResult> => {
+    if (!destinationPath.startsWith('/')) {
+        destinationPath = `/${destinationPath}`;
+    }
+
+    const fullSourcePath = `${process.env.HOME}${sourcePath}`;
+    const fullDestinationPath = `${process.env.HOME}${destinationPath}`;
+    const sourceStats = await getStats(sourcePath);
+    const destinationStats = await getStats(destinationPath);
+
+    if (sourceStats.type === 'directory') {
+        return { error: 'Cannot copy a directory' };
+
+    } else if (destinationStats && destinationStats.type === 'directory') {
+        return { error: 'Cannot overwrite an existing directory' };
+        
+    } else if (destinationStats && !destinationStats.writeable) {
+        return { error: 'Do not have write permission for the file' };
+    }
+
+    try {
+        await copyFile(fullSourcePath, fullDestinationPath)
+
+        const copyStats = await getStats(destinationPath);
+        return { stats: copyStats }
+
+    } catch (error) {
+        logger.error(`Failed to copy file: ${errMsg(error)}`);
+        throw error;
+    }
+}
+
+const performNewFolderAction = async (path: string): Promise<ActionResult> => {
+    const fullPath = `${process.env.HOME}${path}`;
+    const stats = await getStats(path);
+    if (stats.type !== 'directory') {
+        return { error: `Path must be a directory`};
+    }
+
+    // Get next new folder name
+    const folderNamePrefix = 'Untitled Folder'
+    let folderNameIndex = 0;
+
+    let folderExists = true;
+    let folderPath = '';
+    let fullFolderPath = '';
+    do {
+        const folderName = folderNameIndex === 0 ? folderNamePrefix : `${folderNamePrefix} ${folderNameIndex}`;
+        folderPath = `${path}/${folderName}`;
+        fullFolderPath = `${fullPath}/${folderName}`;
+        folderExists = exists(folderPath);
+        folderNameIndex++;
+
+    } while (folderExists);
+
+    try {
+        await mkdir(fullFolderPath);
+
+        const newFolderStats = await getStats(folderPath);
+        return { stats: newFolderStats }
+
+    } catch (error) {
+        logger.error(`Failed to create new folder: ${errMsg(error)}`);
+        throw error;
+    }
+}
+
+const performNewFileAction = async (path: string): Promise<ActionResult> => {
+    const fullPath = `${process.env.HOME}${path}`;
+    const stats = await getStats(path);
+    if (stats.type !== 'directory') {
+        return { error: `Path must be a directory`};
+    }
+
+    // Get next new file name
+    const fileNamePrefix = 'untitled'
+    let fileNameIndex = 0;
+
+    let fileExists = true;
+    let filePath = '';
+    let fullFilePath = '';
+    do {
+        const fileName = fileNameIndex === 0 ? `${fileNamePrefix}.txt` : `${fileNamePrefix}${fileNameIndex}.txt`;
+        filePath = `${path}/${fileName}`;
+        fullFilePath = `${fullPath}/${fileName}`;
+        fileExists = exists(filePath);
+        fileNameIndex++;
+
+    } while (fileExists);
+
+    try {
+        await writeFile(fullFilePath, '');
+
+        const newFileStats = await getStats(filePath);
+        return { stats: newFileStats }
+
+    } catch (error) {
+        logger.error(`Failed to create new file: ${errMsg(error)}`);
+        throw error;
+    }
+}
+
 export const FilesService = {
     exists,
     getContent,
     createContent,
     deleteContent,
+    performContentAction,
 }

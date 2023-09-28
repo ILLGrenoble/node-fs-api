@@ -10,7 +10,7 @@ filesRouter.get('*', FilesController.getContent);
 filesRouter.post('*', FilesController.createContent);
 
 // Copy file or directory
-filesRouter.put('*', FilesController.getContent);
+filesRouter.put('*', FilesController.performContentAction);
 
 // Move file or directory
 filesRouter.patch('*', FilesController.getContent);
