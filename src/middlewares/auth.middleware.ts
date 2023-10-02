@@ -8,8 +8,12 @@ export function authTokenMiddleware(req: Request, res: Response, next: NextFunct
     const targetToken = APPLICATION_CONFIG().server.authToken;
 
 
-    if (xAuthToken && xAuthToken === targetToken) {
+    if (targetToken === '' || targetToken == null) {
         next();
+
+    } else if (xAuthToken && xAuthToken === targetToken) {
+        next();
+
     } else {
         return res.status(403).send('Permission denied');
     }   
