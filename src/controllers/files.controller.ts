@@ -83,7 +83,7 @@ const deleteContent = async (req: Request, res: Response) => {
         if (FilesService.exists(uriDecodedPath)) {
             const result = await FilesService.deleteContent(uriDecodedPath);
             if (result.success) {
-                res.status(200).send('success');
+                res.status(200).json({success: true});
     
             } else {
                 res.status(409).send(result.error);
