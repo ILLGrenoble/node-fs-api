@@ -5,6 +5,7 @@ export class ApplicationConfig {
     port: number,
     host: string,
     authToken: string,
+    maxFileUploadSize: string,
   }
 
   logging: {
@@ -26,7 +27,8 @@ export function APPLICATION_CONFIG(): ApplicationConfig {
       server: {
         port: process.env.VISA_FILE_BROWSER_SERVER_PORT == null ? 9000 : +process.env.VISA_FILE_BROWSER_SERVER_PORT,
         host: process.env.VISA_FILE_BROWSER_SERVER_HOST == null ? '0.0.0.0' : process.env.VISA_FILE_BROWSER_SERVER_HOST,
-        authToken: process.env.VISA_FILE_BROWSER_SERVER_AUTH_TOKEN
+        authToken: process.env.VISA_FILE_BROWSER_SERVER_AUTH_TOKEN,
+        maxFileUploadSize: process.env.VISA_FILE_BROWSER_MAX_FILE_UPLOAD_SIZE == null ? '2.0mb': process.env.VISA_FILE_BROWSER_MAX_FILE_UPLOAD_SIZE,
       },
       logging: {
         level: process.env.VISA_FILE_BROWSER_LOG_LEVEL == null ? 'debug' : process.env.VISA_FILE_BROWSER_LOG_LEVEL,

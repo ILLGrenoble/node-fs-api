@@ -17,7 +17,7 @@ export class Application {
       logger.info('Starting application');
 
       const app = express();
-      app.use(express.json());
+      app.use(express.json({limit: APPLICATION_CONFIG().server.maxFileUploadSize}));
 
       app.use('/api', apiRouter);
 

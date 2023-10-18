@@ -83,10 +83,16 @@ const getContent = async (path: string): Promise<FileContent | DirectoryContent>
                     path = `${path}/`;
                 }
                 const files = await readdir(fullPath);
+                if (path !== '/') {
+                    files.push('..');
+                }
                 const contents: FileStats[] = [];
                 for (const file of files) {
                     const filePath = `${path}${file}`;
                     const fileStats = await getStats(filePath);
+                    if (file === '..') {
+                        fileStats.path = `/${fileStats.path.split('/').slice(0, -2).join('/')}`;
+                    }
                     contents.push(fileStats);
                 }
 
