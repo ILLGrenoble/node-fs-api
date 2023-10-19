@@ -91,7 +91,7 @@ const getContent = async (path: string): Promise<FileContent | DirectoryContent>
                     const filePath = `${path}${file}`;
                     const fileStats = await getStats(filePath);
                     if (file === '..') {
-                        fileStats.path = `/${fileStats.path.split('/').slice(0, -2).join('/')}`;
+                        fileStats.path = `${fileStats.path.split('/').slice(0, -2).join('/')}`;
                     }
                     contents.push(fileStats);
                 }
