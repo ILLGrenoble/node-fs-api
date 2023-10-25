@@ -1,7 +1,7 @@
 # Node FS API
 [![npm version](https://badge.fury.io/js/%40illgrenoble%2Fnode-fs-api.svg)](https://badge.fury.io/js/%40illgrenoble%2Fnode-fs-api)
 
-`Node FS API` is a REST API built with Express to provde access to the file system. File system access is limited to the user running the application (system files are inaccessible). It is provided as a backend to the Angular component [`ngx-fs-client`](https://www.npmjs.com/package/@illgrenoble/ngx-fs-client) to enable a simple remote file manager.
+`Node FS API` is a REST API built with Express to provide access to the file system. File system access is limited to the user running the application (system files are inaccessible). It is provided as a backend to the Angular component [`ngx-fs-client`](https://www.npmjs.com/package/@illgrenoble/ngx-fs-client) to enable a simple remote file manager.
 
 Due to security concerns the client is not intended to access the server directly but rather use a server-side proxy to manage access/authorisation rights (eg running the FS API within a micro-service architecture).
 
