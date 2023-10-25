@@ -25,14 +25,14 @@ export function APPLICATION_CONFIG(): ApplicationConfig {
   if (applicationConfig == null) {
     applicationConfig = {
       server: {
-        port: process.env.VISA_FILE_BROWSER_SERVER_PORT == null ? 9000 : +process.env.VISA_FILE_BROWSER_SERVER_PORT,
-        host: process.env.VISA_FILE_BROWSER_SERVER_HOST == null ? '0.0.0.0' : process.env.VISA_FILE_BROWSER_SERVER_HOST,
-        authToken: process.env.VISA_FILE_BROWSER_SERVER_AUTH_TOKEN,
-        maxFileUploadSize: process.env.VISA_FILE_BROWSER_MAX_FILE_UPLOAD_SIZE == null ? '2.0mb': process.env.VISA_FILE_BROWSER_MAX_FILE_UPLOAD_SIZE,
+        port: process.env.NODE_FS_API_SERVER_PORT == null ? 8090 : +process.env.NODE_FS_API_SERVER_PORT,
+        host: process.env.NODE_FS_API_SERVER_HOST == null ? '0.0.0.0' : process.env.NODE_FS_API_SERVER_HOST,
+        authToken: process.env.NODE_FS_API_SERVER_AUTH_TOKEN,
+        maxFileUploadSize: process.env.NODE_FS_API_MAX_FILE_UPLOAD_SIZE == null ? '2.0mb': process.env.NODE_FS_API_MAX_FILE_UPLOAD_SIZE,
       },
       logging: {
-        level: process.env.VISA_FILE_BROWSER_LOG_LEVEL == null ? 'debug' : process.env.VISA_FILE_BROWSER_LOG_LEVEL,
-        timezone: process.env.VISA_FILE_BROWSER_LOG_TIMEZONE,
+        level: process.env.NODE_FS_API_LOG_LEVEL == null ? 'debug' : process.env.NODE_FS_API_LOG_LEVEL,
+        timezone: process.env.NODE_FS_API_LOG_TIMEZONE,
       }
     };
 
