@@ -284,6 +284,9 @@ const performCopyToAction = async (sourcePath: string, destinationPath: string):
 }
 
 const performNewFolderAction = async (path: string): Promise<ActionResult> => {
+    if (!path.endsWith('/')) {
+        path = `${path}/`;
+    }
     const fullPath = `${process.env.HOME}${path}`;
     const stats = await getStats(path);
     if (stats.type !== 'directory') {
@@ -299,8 +302,8 @@ const performNewFolderAction = async (path: string): Promise<ActionResult> => {
     let fullFolderPath = '';
     do {
         const folderName = folderNameIndex === 0 ? folderNamePrefix : `${folderNamePrefix} ${folderNameIndex}`;
-        folderPath = `${path}/${folderName}`;
-        fullFolderPath = `${fullPath}/${folderName}`;
+        folderPath = `${path}${folderName}`;
+        fullFolderPath = `${fullPath}${folderName}`;
         folderExists = exists(folderPath);
         folderNameIndex++;
 
@@ -319,6 +322,9 @@ const performNewFolderAction = async (path: string): Promise<ActionResult> => {
 }
 
 const performNewFileAction = async (path: string): Promise<ActionResult> => {
+    if (!path.endsWith('/')) {
+        path = `${path}/`;
+    }
     const fullPath = `${process.env.HOME}${path}`;
     const stats = await getStats(path);
     if (stats.type !== 'directory') {
@@ -334,8 +340,8 @@ const performNewFileAction = async (path: string): Promise<ActionResult> => {
     let fullFilePath = '';
     do {
         const fileName = fileNameIndex === 0 ? `${fileNamePrefix}.txt` : `${fileNamePrefix}${fileNameIndex}.txt`;
-        filePath = `${path}/${fileName}`;
-        fullFilePath = `${fullPath}/${fileName}`;
+        filePath = `${path}${fileName}`;    
+        fullFilePath = `${fullPath}${fileName}`;
         fileExists = exists(filePath);
         fileNameIndex++;
 
