@@ -26,7 +26,7 @@ export function APPLICATION_CONFIG(): ApplicationConfig {
     applicationConfig = {
       server: {
         port: process.env.NODE_FS_API_SERVER_PORT == null ? 8090 : +process.env.NODE_FS_API_SERVER_PORT,
-        host: process.env.NODE_FS_API_SERVER_HOST == null ? '0.0.0.0' : process.env.NODE_FS_API_SERVER_HOST,
+        host: process.env.NODE_FS_API_SERVER_HOST == null ? 'localhost' : process.env.NODE_FS_API_SERVER_HOST,
         authToken: process.env.NODE_FS_API_SERVER_AUTH_TOKEN,
         maxFileUploadSize: process.env.NODE_FS_API_MAX_FILE_UPLOAD_SIZE == null ? '2.0mb': process.env.NODE_FS_API_MAX_FILE_UPLOAD_SIZE,
       },

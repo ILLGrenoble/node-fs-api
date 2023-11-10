@@ -1,6 +1,6 @@
 {
     "name": "@illgrenoble/node-fs-api",
-    "version": "0.9.4",
+    "version": "1.0.0",
     "description": "Provides a REST API to access the file system",
     "main": "index.js",
     "bin": {

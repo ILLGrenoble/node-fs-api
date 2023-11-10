@@ -38,7 +38,7 @@ The following environment variables can be set to configure the API:
 
 |Environment variable|default value|description|
 |---|---|---|
-|NODE_FS_API_SERVER_HOST|0.0.0.0|Host on which the Express server listens to|
+|NODE_FS_API_SERVER_HOST|localhost|Host on which the Express server listens to|
 |NODE_FS_API_SERVER_PORT|8090|The Express server port|
 |NODE_FS_API_SERVER_AUTH_TOKEN| |An authorisation token that (when set) must be added to the request header `x-auth-token`|
 |NODE_FS_API_MAX_FILE_UPLOAD_SIZE|2.0mb|Max payload size that is accepted by the Express server|
